@@ -1,0 +1,41 @@
+[package]
+name = "highvis"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+path = "src/main.rs"
+name = "highvis"
+
+[dependencies]
+dioxus = "0.3.2"
+dioxus-desktop = "0.3.0"
+sqlx = { version = "0.6", features = [ "runtime-async-std-native-tls", "sqlite" ] }
+async-std = { version = "1", features = [ "attributes" ] }
+native-dialog = "0.6.3"
+dioxus-router = "0.3.0"
+
+serde_json = "1.0"
+serde_yaml = "0.9.19"
+serde = { version = "1", features = ["derive"] }
+
+[package.metadata.bundle]
+name = "highvis content editor"
+identifier = "com.doe.exampleapplication"
+icon = ["32x32.png", "128x128.png", "128x128@2x.png"]
+version = "0.1.0"
+resources = ["assets", "images/**/*.png", "secrets/public_key.txt"]
+copyright = "Copyright (c) Benjamin Corey 2023. All rights reserved."
+category = "Developer Tool"
+short_description = "A content management application for small blogs."
+long_description = """
+Point Ripstop to a SQLite database of your content and it will
+index it into the form of a static site for your 
+blog to access, no database hosting required.
+"""
+osx_frameworks = []

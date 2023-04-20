@@ -1,0 +1,288 @@
+@font-face {
+    font-family: 'mono-bold';
+    src: url('./src/styles/fonts/BerkeleyMono-Bold.ttf') format('truetype');
+  }
+
+@font-face {
+    font-family: 'mono-bold-italic';
+    src: url('./src/styles/fonts/BerkeleyMono-BoldItalic.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'mono-regular';
+    src: url('./src/styles/fonts/BerkeleyMono-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'mono-italic';
+    src: url('./src/styles/fonts/BerkeleyMono-Italic.ttf') format('truetype');
+}
+
+
+:root {
+    --bg: white;
+    --hint: #D9D9D9;
+    --fg: black;
+    --selected: #007C4C;
+}
+
+::selection {
+    background-color: #4D2A93;
+    color: white;
+}
+
+h1 {
+    font-weight: normal;
+    font-family: 'mono-bold';
+}
+
+h2 {
+    font-weight: normal;
+    font-family: 'mono-bold';
+}
+
+h3 {
+    font-weight: normal;
+    font-family: 'mono-bold';
+}
+
+a {
+    color: inherit;
+    font-family: inherit;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    overscroll-behavior-y: none;
+}
+
+main {
+    font-family: 'mono-regular';
+    font-size: 62.5%;
+    padding: 0;
+    margin: 0;
+    height: 100vh;
+    width: 100%;
+}
+
+.container {
+    font-size: .8rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.centered-start {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.menu-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-buttons-box {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.title-box{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding-bottom: 1rem;
+}
+
+.top-bar {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1.8rem;
+    margin-bottom: .5rem;
+    margin-left: 1rem;
+}
+
+.title {
+    font-size: 1.4rem;
+    font-family: 'mono-bold';
+}
+
+.layout-grid {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    grid-template-rows: 3rem auto;
+    background-color: pink;
+    column-gap: 0;
+    overflow: hidden;
+}
+
+button {
+    font-family: inherit;
+    font-size: inherit;
+    max-width: fit-content;
+}
+
+input {
+    font-family: inherit;
+    font-size: inherit;
+}
+
+textarea {
+    font-family: 'mono-regular';
+    font-size: inherit;
+    padding: .4rem .2rem;
+    width: calc(100% - .8rem);
+    min-height: 10rem;
+    resize: none;
+    border-radius: 0;
+    border: .05rem solid var(--fg);
+}
+
+.link {
+    text-decoration: none;
+}
+
+.link-active {
+    text-decoration: none;
+}
+
+.link-capped-width {
+    width: fit-content;
+}
+
+table {
+    table-layout: fixed;
+    border-collapse: collapse;
+    border: .05rem solid black;
+    min-width: 100%;
+}
+
+table:nth-child(1) {
+    background-color: var(--selected);
+    color: var(--bg);
+}
+
+td {
+    padding: .2rem 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+td:hover {
+    max-width: unset;
+}
+
+tr {
+    border: .05rem solid var(--fg);
+    color: var(--fg);
+    width: 100%;
+}
+
+tr:nth-child(odd) {
+    background-color: var(--bg);
+}
+  
+tr:nth-child(even) {
+    background-color: var(--hint);
+}
+
+tr:hover {
+    background-color: var(--fg);
+    color: var(--bg);
+}
+
+.table-wrapper {
+    width: 100%;
+    height: 100%;
+    overflow-x: scroll;
+    overflow-y: scroll;
+    background-color: var(--bg);
+    outline: .05rem solid var(--fg);
+}
+
+.query-container {
+    margin: 1rem;
+    margin-top: .5rem;
+}
+
+.tabs-container {
+    overflow: hidden;
+    display: block;
+    height: fit-content;
+    background-color: var(--bg);
+}
+
+.tabs {
+    padding-left: 1rem;
+    display: flex;
+    flex-direction: row;
+}
+
+.tab {
+    margin: 0;
+    padding: .3rem .5rem;
+    background-color: var(--bg);
+    height: 1.5rem;
+}
+
+.tab-focused.tab {
+    background-color: var(--selected);
+    color: var(--bg);
+}
+
+.tab-focused.query-tab-focused.tab {
+    background-color: #002C9B;
+
+}
+
+.query-tab {
+    background-color: #002C9B;
+    color: var(--bg);
+}
+
+button {
+    padding: .3rem .5rem;
+    margin-right: .2rem;
+    min-width: 8rem;
+    background-color: var(--bg);
+    border: .05rem solid var(--fg);
+    box-shadow: .3rem .2rem 0 0 var(--hint);
+    border-radius: 0;
+}
+
+button:hover {
+    background-color: var(--fg);
+    color: var(--bg);
+}
+
+.context-btn {
+    background-color: inherit;
+    color: inherit;
+    font-size: .6rem;
+    min-width: fit-content;
+    padding: .2rem;
+    box-shadow: none;
+    margin-right: .2rem;
+}
+
+
+.context-bar {
+    height: 1.5rem;
+    width: 100%;
+    background-color: var(--selected);
+    color: var(--bg);
+    z-index: 100;
+    position: relative;
+}
+
+.context-bar-tools {
+    height: 100%;
+    padding-left: 1rem;
+    display: flex;
+    align-items: center;
+}
