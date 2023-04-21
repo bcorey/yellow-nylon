@@ -27,6 +27,7 @@ fn App(cx: Scope) -> Element {
                 class: "container",
                 Router {
                     Route { to: "/", StartPage {} },
+                    Route { to: "/edit", EditPage {} }
                 }
             }
         }

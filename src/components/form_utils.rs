@@ -7,6 +7,13 @@ pub enum FormState {
     Submitted,
 }
 
+#[derive(Copy, Clone, PartialEq)]
+pub enum FormMode {
+    Edit,
+    Create,
+    Delete,
+}
+
 #[derive(Debug, Clone)]
 pub struct CheckboxError;
 

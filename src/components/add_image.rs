@@ -37,7 +37,7 @@ impl ImageForm {
 
 
 #[inline_props]
-pub fn ImageForm(cx: Scope, database_path: String) -> Element {
+pub fn ImageForm(cx: Scope, database_path: String, content_entry_id: String) -> Element {
     let image_form: &UseRef<ImageForm> = use_ref(cx, || ImageForm::new());
     let image_path: &UseState<Option<String>> = use_state(cx, || None);
 
@@ -45,13 +45,10 @@ pub fn ImageForm(cx: Scope, database_path: String) -> Element {
     cx.render(rsx!{
         match **form_state {
             FormState::Closed => rsx!{
-                button {
-                    onclick: move |_| {
-                        let path = choose_file(FileType::Image);
-                        image_path.set(path.clone());
-                        image_form.with_mut(|form| form.image_path = path.clone());
-                    },
-                    "Select Image"
+                ImageFormClosed {
+                    image_form: image_form,
+                    image_path: image_path,
+                    form_state: form_state,
                 }
             },
             FormState::Active => rsx!{
@@ -72,6 +69,26 @@ pub fn ImageForm(cx: Scope, database_path: String) -> Element {
 }
 
 #[inline_props]
+fn ImageFormClosed<'a>(
+    cx: Scope<'a>, 
+    image_path: &'a UseState<Option<String>>, 
+    image_form: &'a UseRef<ImageForm>, 
+    form_state: &'a UseState<FormState>
+) -> Element {
+    cx.render(rsx!{
+        button {
+            onclick: move |_| {
+                let path = choose_file(FileType::Image);
+                image_path.set(path.clone());
+                image_form.with_mut(|form| form.image_path = path.clone());
+                form_state.set(FormState::Active);
+            },
+            "Select Image"
+        }
+    })
+}
+
+#[inline_props]
 fn ImageFormActive<'a>(cx: Scope, image_form: &'a UseRef<ImageForm>, form_state: &'a UseState<FormState>) -> Element {
 
     cx.render(rsx!{
@@ -86,7 +103,6 @@ fn ImageFormActive<'a>(cx: Scope, image_form: &'a UseRef<ImageForm>, form_state:
                     r#type: "text",
                     name: "image_caption",
                     oninput: move |evt| image_form.with_mut(|form| form.image_caption = Some(evt.value.clone())),
-                    
                 }
                 label {
                     r#for: "is_content_thumbnail",
@@ -141,8 +157,11 @@ fn ImageFormActive<'a>(cx: Scope, image_form: &'a UseRef<ImageForm>, form_state:
 #[inline_props]
 fn ImageFormSubmitted<'a>(cx: Scope, image_form: &'a UseRef<ImageForm>, form_state: &'a UseState<FormState>, database_path: String) -> Element {
     let future = use_future(cx, (), |()| {
+        to_owned![database_path];
         let row = ImageRow::new(image_form.read().clone());
-        image_table_entry(database_path.clone(), row)
+        async move {
+            row.add_image_row(database_path.clone()).await
+        }
     });
     
     cx.render(rsx!{

@@ -13,12 +13,12 @@ path = "src/main.rs"
 name = "highvis"
 
 [dependencies]
-dioxus = "0.3.2"
-dioxus-desktop = "0.3.0"
+dioxus = { git = "https://github.com/DioxusLabs/dioxus" }
+dioxus-desktop = { git = "https://github.com/DioxusLabs/dioxus" }
 sqlx = { version = "0.6", features = [ "runtime-async-std-native-tls", "sqlite" ] }
 async-std = { version = "1", features = [ "attributes" ] }
 native-dialog = "0.6.3"
-dioxus-router = "0.3.0"
+dioxus-router = { git = "https://github.com/DioxusLabs/dioxus" }
 
 serde_json = "1.0"
 serde_yaml = "0.9.19"
