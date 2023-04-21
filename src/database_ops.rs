@@ -76,13 +76,6 @@ async fn query_generic<'a>(path: String, query: Query<'a, Sqlite, SqliteArgument
     Ok(rows_affected.rows_affected())
 }
 
-fn bool_to_num(b: bool) -> i64 {
-    match b {
-        true => 1,
-        false => 0
-    }
-}
-
 #[derive(Debug, Clone, sqlx::FromRow, PartialEq)]
 pub struct ContentRow {
     pub content_entry_id: Option<String>,
@@ -105,7 +98,7 @@ impl ContentRow {
             tagline: Some(content_form.tagline),
             tags: Some(content_form.tags),
             content: Some(content_form.content),
-            is_pinned: Some(bool_to_num(content_form.is_pinned)),
+            is_pinned: Some(content_form.is_pinned as i64),
             date: Some(content_form.date),
             content_type: Some(content_form.content_type)
         }
@@ -224,16 +217,16 @@ impl ContentRow {
 
 
 
-#[derive(Debug, Clone, sqlx::FromRow)]
+#[derive(Debug, Clone, sqlx::FromRow, PartialEq)]
 pub struct ImageRow {
-    pub image_name: String,
-    pub image_caption: String,
-    pub is_content_thumbnail: bool,
-    pub is_pinned: bool,
-    pub content_entry_id: String,
-    pub image_original: Vec<u8>,
-    pub image_web: Vec<u8>,
-    pub image_thumbnail: Vec<u8>,
+    pub image_name: Option<String>,
+    pub image_caption: Option<String>,
+    //pub is_content_thumbnail: Option<bool>,
+    pub is_pinned: Option<i64>,
+    pub content_entry_id: Option<String>,
+    pub image_original: Option<Vec<u8>>,
+    pub image_web: Option<Vec<u8>>,
+    pub image_thumbnail: Option<Vec<u8>>,
 }
 use crate::components::ImageForm;
 impl ImageRow {
@@ -241,14 +234,14 @@ impl ImageRow {
         let path = image_form.image_path.unwrap().clone();
         let image_bytes = std::fs::read(&path).expect("Could not read image");
         ImageRow {
-            image_name: path,
-            image_caption: image_form.image_caption.unwrap().clone(),
-            is_content_thumbnail: image_form.is_content_thumbnail,
-            is_pinned: image_form.is_pinned,
-            content_entry_id: image_form.content_entry_id.unwrap().clone(),
-            image_original: image_bytes.clone(),
-            image_web: image_bytes.clone(),
-            image_thumbnail: image_bytes.clone(),
+            image_name: Some(path),
+            image_caption: Some(image_form.image_caption.unwrap().clone()),
+            //is_content_thumbnail: Some(image_form.is_content_thumbnail),
+            is_pinned: Some(image_form.is_pinned as i64),
+            content_entry_id: Some(image_form.content_entry_id.unwrap().clone()),
+            image_original: Some(image_bytes.clone()),
+            image_web: Some(image_bytes.clone()),
+            image_thumbnail: Some(image_bytes.clone()),
         }
     }
 
@@ -279,6 +272,28 @@ impl ImageRow {
             self.image_thumbnail
         );
         query_generic(database_path, query).await
+    }
+
+    pub async fn get_content_images(database_path: String, content_entry_id: String) -> Vec<ImageRow> {
+        let pool = SqlitePoolOptions::new()
+        .max_connections(5)
+        .connect(&database_path).await.unwrap();
+
+        let query = sqlx::query_as!(
+            ImageRow,
+            r#"
+            SELECT * FROM image_table WHERE content_entry_id=?
+            "#,
+            content_entry_id
+        );
+
+        let rows = query
+            .fetch_all(&pool)
+            .await
+            .unwrap();
+
+        pool.close().await;
+        rows
     }
 }
 

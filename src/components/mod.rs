@@ -15,3 +15,6 @@ pub use browse_entries::*;
 
 pub mod edit_page;
 pub use edit_page::*;
+
+pub mod view_images;
+pub use view_images::*;

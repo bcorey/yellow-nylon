@@ -1,6 +1,5 @@
 #![allow(non_snake_case)]
 use dioxus::prelude::*;
-use serde::__private::de::Content;
 
 use crate::database_ops::search_rows;
 use crate::database_ops::ContentRow;
@@ -8,7 +7,6 @@ use crate::components::*;
 
 #[inline_props]
 pub fn EntryViewer(cx: Scope, database_path: String, ) -> Element {
-    
 
     let form_state = use_state(cx, || FormState::Closed);
     let edit_candidate: &'a UseState<Option<ContentRow>> = use_state(cx, || None);
@@ -50,8 +48,7 @@ pub fn EntryViewer(cx: Scope, database_path: String, ) -> Element {
                     }
                 }
             }
-        }
-        
+        }        
     })
 }
 

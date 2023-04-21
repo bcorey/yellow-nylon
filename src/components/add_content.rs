@@ -2,7 +2,7 @@
 use dioxus::html::data;
 use dioxus::prelude::*;
 use crate::components::form_utils::*;
-use crate::components::ImageForm;
+use crate::components::*;
 use crate::database_ops::*;
 
 #[derive(Clone, Copy, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -107,7 +107,7 @@ pub fn ContentForm<'a>(cx: Scope<'a>, database_path: String, form_state: &'a Use
                 }
             },
             FormState::Active => rsx!{
-                ImageForm{
+                ImageViewer {
                     database_path: database_path.clone(),
                     content_entry_id: content_form.read().content_entry_id.clone(),
                 }
