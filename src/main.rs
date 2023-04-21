@@ -2,7 +2,6 @@
 
 use dioxus::prelude::*;
 use dioxus_desktop::WindowBuilder;
-use dioxus_router::{Route, Router};
 use highvis::components::*;
 
 fn main() {
@@ -25,10 +24,7 @@ fn App(cx: Scope) -> Element {
         main {
             div {
                 class: "container",
-                Router {
-                    Route { to: "/", StartPage {} },
-                    Route { to: "/edit", EditPage {} }
-                }
+                StartPage {}
             }
         }
     })

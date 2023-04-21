@@ -1,7 +1,6 @@
 #![allow(non_snake_case)]
 use dioxus::prelude::*;
 
-use crate::database_ops::search_rows;
 use crate::database_ops::ContentRow;
 use crate::components::*;
 
@@ -13,8 +12,8 @@ pub fn EntryViewer(cx: Scope) -> Element {
 
     let search_term = use_state(cx, || String::new());
     let search_dep = search_term.current().to_string();
-    let future = use_future(cx, (&search_dep, form_state,), |(search_dep,form_state,)| 
-        search_rows(database_path.clone(), search_dep)
+    let future = use_future(cx, (&search_dep, form_state,), |(search_dep,_form_state,)| 
+        ContentRow::search_rows(database_path.clone(), search_dep)
     );
     cx.render(rsx!{
         

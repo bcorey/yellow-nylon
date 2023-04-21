@@ -35,7 +35,6 @@ pub fn choose_file(file_type: FileType) -> Option<String> {
 }
 
 pub fn choose_path() -> String {
-
     let path = FileDialog::new()
         .set_location(r#"C:\Users\benja\Documents"#)
         .show_open_single_dir()
