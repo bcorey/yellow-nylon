@@ -2,31 +2,66 @@
 use dioxus::prelude::*;
 use crate::file_selector::*;
 use crate::components::*;
-use crate::database_ops::ContentRow;
-use crate::components::form_utils::FormMode;
+use crate::components::form_utils::*;
 
 #[inline_props]
 pub fn StartPage(cx: Scope) -> Element {
-    let selected_path: &UseState<Option<String>> = use_state(cx, || None);
-    let image_form: &UseState<Option<ImageForm>> = use_state(cx, || None);
-
+    let start_page_state = use_state(cx, || FormState::Active);
+    use_shared_state_provider::<Option<String>>(cx, || None);
+    let db_path = use_database_path(cx);
 
     cx.render(rsx!{
         h1 {"hi.vis"}
-        button {
-            onclick:move |_| selected_path.set(choose_file(FileType::Database)),
-            "Choose database"
-        }
-
-        if let Some(path) = selected_path.as_ref() {
-            rsx!{
+       
+        match **start_page_state {
+            FormState::Active => rsx!{
+                button {
+                    onclick:move |_| {
+                        *db_path.write() = choose_file(FileType::Database);
+                        start_page_state.set(FormState::Closed);
+                    },
+                    "Choose database"
+                }
+            },
+            _ => rsx!{
+                button {
+                    onclick: move |_| {
+                        *db_path.write() = None;
+                        start_page_state.set(FormState::Active);
+                    },
+                    "Close Database"
+                },
                 
-                ContentFormWrapper {
-                    database_path: path.clone(),
+                DatabaseContainer {
+                    
                 }
-                EntryViewer {
-                    database_path: path.clone(),
-                }
+            }
+        }
+    })
+}
+
+#[inline_props]
+pub fn DatabaseContainer(cx: Scope) -> Element {
+    let compile_form_state = use_state(cx, || FormState::Closed);
+
+    cx.render(rsx!{
+        match **compile_form_state {
+            FormState::Closed => rsx!{
+                button {
+                    onclick: move |_| compile_form_state.set(FormState::Active),
+                    "Compile Pages"
+                },
+                EntryViewer {}
+            },
+            FormState::Active => rsx!{
+                button {
+                    onclick: move |_| compile_form_state.set(FormState::Closed),
+                    "Cancel",
+                },
+                CompilePagesForm {}
+            },
+            FormState::Submitted => rsx!{
+                ""
             }
         }
     })

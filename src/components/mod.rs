@@ -18,3 +18,9 @@ pub use edit_page::*;
 
 pub mod view_images;
 pub use view_images::*;
+
+pub mod compile_pages;
+pub use compile_pages::*;
+
+pub mod path_hooks;
+pub use path_hooks::*;

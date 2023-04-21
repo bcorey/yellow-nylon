@@ -1,8 +1,7 @@
 
-use sqlx::{Column, Sqlite};
+use sqlx::Sqlite;
 use sqlx::sqlite::{SqlitePoolOptions, SqliteArguments};
 use sqlx::query::Query;
-use sqlx::sqlite::SqliteRow;
 use sqlx::Error;
 
 
@@ -41,8 +40,9 @@ pub async fn search_rows(database_path: String, search_term: String) -> Vec<Cont
             let query = sqlx::query_as!(
                 ContentRow,
                 r#"
-                SELECT * FROM content_table WHERE title LIKE ? OR tagline LIKE ? OR tags LIKE ? OR content LIKE ?
+                SELECT * FROM content_table WHERE title LIKE ? OR tagline LIKE ? OR tags LIKE ? OR content LIKE ? OR date LIKE ?
                 "#, 
+                search_term,
                 search_term,
                 search_term,
                 search_term,
@@ -104,6 +104,7 @@ impl ContentRow {
         }
     }
 
+    /// deletes content row and associated images
     pub async fn delete_content_row(database_path: String, content_entry_id: String) -> Result<u64, Error>{
         let query: Query<Sqlite, SqliteArguments> = sqlx::query!(
             r#"
@@ -111,8 +112,10 @@ impl ContentRow {
             "#, 
             content_entry_id
         );
-        println!("deleting: {}", content_entry_id);
-    
+        let images = ImageRow::get_content_images(database_path.clone(), content_entry_id.clone()).await;
+        for image in images {
+            image.delete_image_row(database_path.clone()).await.expect("Couldn't delete image");
+        }
         query_generic(database_path, query).await
     }
 
@@ -231,14 +234,16 @@ pub struct ImageRow {
 use crate::components::ImageForm;
 impl ImageRow {
     pub fn new(image_form: ImageForm) -> Self {
-        let path = image_form.image_path.unwrap().clone();
+        let path = image_form.image_path.clone();
         let image_bytes = std::fs::read(&path).expect("Could not read image");
+
+        let name = path.split(r#"\"#).last().unwrap().to_string();
         ImageRow {
-            image_name: Some(path),
-            image_caption: Some(image_form.image_caption.unwrap().clone()),
+            image_name: Some(name),
+            image_caption: Some(image_form.image_caption.clone()),
             //is_content_thumbnail: Some(image_form.is_content_thumbnail),
             is_pinned: Some(image_form.is_pinned as i64),
-            content_entry_id: Some(image_form.content_entry_id.unwrap().clone()),
+            content_entry_id: Some(image_form.content_entry_id.clone()),
             image_original: Some(image_bytes.clone()),
             image_web: Some(image_bytes.clone()),
             image_thumbnail: Some(image_bytes.clone()),

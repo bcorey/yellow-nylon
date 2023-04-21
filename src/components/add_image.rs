@@ -8,18 +8,24 @@ use crate::components::form_utils::*;
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct ImageForm {
-    pub image_path: Option<String>,
-    pub image_caption: Option<String>,
+    pub image_path: String,
+    pub image_caption: String,
     pub is_content_thumbnail: bool,
     pub is_pinned: bool,
-    pub content_entry_id: Option<String>,
+    pub content_entry_id: String,
 }
 
 
 
 impl ImageForm {
     fn new() -> Self {
-        ImageForm { image_path: None, image_caption: None, is_content_thumbnail: false, is_pinned: false, content_entry_id: None }
+        ImageForm { 
+            image_path: String::new(), 
+            image_caption: String::new(), 
+            is_content_thumbnail: false, 
+            is_pinned: false, 
+            content_entry_id: String::new() 
+        }
     }
 
     fn checkbox_value(value: String) -> Result<bool, CheckboxError> {
@@ -31,19 +37,18 @@ impl ImageForm {
     }
 
     fn is_ok(&self) -> bool {
-        self.image_path.is_some() && self.image_caption.is_some() && self.content_entry_id.is_some()
+        self.image_path.len() > 0 && self.image_caption.len() >0 && self.content_entry_id.len() > 0
     }
 }
 
 
 #[inline_props]
-pub fn ImageForm(cx: Scope, database_path: String, content_entry_id: String) -> Element {
+pub fn ImageForm<'a>(cx: Scope<'a>, form_state: &'a UseState<FormState>, content_entry_id: String) -> Element {
     let image_form: &UseRef<ImageForm> = use_ref(cx, || ImageForm::new());
     let image_path: &UseState<Option<String>> = use_state(cx, || None);
 
-    let form_state = use_state(cx, || FormState::Closed);
     cx.render(rsx!{
-        match **form_state {
+        match *form_state.current() {
             FormState::Closed => rsx!{
                 ImageFormClosed {
                     image_form: image_form,
@@ -55,13 +60,13 @@ pub fn ImageForm(cx: Scope, database_path: String, content_entry_id: String) -> 
                 ImageFormActive {
                     image_form: image_form,
                     form_state: form_state,
+                    content_entry_id: content_entry_id.clone()
                 }
             },
             FormState::Submitted => rsx!{
                 ImageFormSubmitted {
                     image_form: image_form,
                     form_state: form_state,
-                    database_path: database_path.clone(),
                 }                
             }
         }        
@@ -78,18 +83,20 @@ fn ImageFormClosed<'a>(
     cx.render(rsx!{
         button {
             onclick: move |_| {
-                let path = choose_file(FileType::Image);
-                image_path.set(path.clone());
-                image_form.with_mut(|form| form.image_path = path.clone());
-                form_state.set(FormState::Active);
+                let path_select = choose_file(FileType::Image);
+                if let Some(path) = path_select {
+                    image_path.set(Some(path.clone()));
+                    image_form.with_mut(|form| form.image_path = path.clone());
+                    form_state.set(FormState::Active);
+                }
             },
-            "Select Image"
+            "Add Image"
         }
     })
 }
 
 #[inline_props]
-fn ImageFormActive<'a>(cx: Scope, image_form: &'a UseRef<ImageForm>, form_state: &'a UseState<FormState>) -> Element {
+fn ImageFormActive<'a>(cx: Scope, image_form: &'a UseRef<ImageForm>, form_state: &'a UseState<FormState>, content_entry_id: String) -> Element {
 
     cx.render(rsx!{
         div {
@@ -102,7 +109,7 @@ fn ImageFormActive<'a>(cx: Scope, image_form: &'a UseRef<ImageForm>, form_state:
                 input {
                     r#type: "text",
                     name: "image_caption",
-                    oninput: move |evt| image_form.with_mut(|form| form.image_caption = Some(evt.value.clone())),
+                    oninput: move |evt| image_form.with_mut(|form| form.image_caption = evt.value.clone()),
                 }
                 label {
                     r#for: "is_content_thumbnail",
@@ -116,8 +123,7 @@ fn ImageFormActive<'a>(cx: Scope, image_form: &'a UseRef<ImageForm>, form_state:
                 }
                 label {
                     r#for: "is_pinned",
-                    "Pin this image",
-                    
+                    "Pin this image",                    
                 }
                 input {
                     r#type: "checkbox",
@@ -125,16 +131,10 @@ fn ImageFormActive<'a>(cx: Scope, image_form: &'a UseRef<ImageForm>, form_state:
                     oninput: move |evt| image_form.with_mut(|form| 
                         form.is_pinned = ImageForm::checkbox_value(evt.value.clone()).unwrap()),
                 }
-                label {
-                    r#for: "content_entry_id",
-                    "content ID:"
-                }
-                input {
-                    r#type: "text",
-                    oninput: move |evt| image_form.with_mut(|form| form.content_entry_id = Some(evt.value.clone())),
-                }
                 button {
                     onclick: move |_| {
+                        image_form.with_mut(|form| form.content_entry_id = content_entry_id.clone());
+
                         if image_form.with_mut(|form| form.is_ok()) {
                             form_state.set(FormState::Submitted);
                         }
@@ -155,7 +155,9 @@ fn ImageFormActive<'a>(cx: Scope, image_form: &'a UseRef<ImageForm>, form_state:
 }
 
 #[inline_props]
-fn ImageFormSubmitted<'a>(cx: Scope, image_form: &'a UseRef<ImageForm>, form_state: &'a UseState<FormState>, database_path: String) -> Element {
+fn ImageFormSubmitted<'a>(cx: Scope, image_form: &'a UseRef<ImageForm>, form_state: &'a UseState<FormState>) -> Element {
+    let database_path = use_database_path(cx).read().clone().unwrap();
+    
     let future = use_future(cx, (), |()| {
         to_owned![database_path];
         let row = ImageRow::new(image_form.read().clone());
@@ -171,7 +173,7 @@ fn ImageFormSubmitted<'a>(cx: Scope, image_form: &'a UseRef<ImageForm>, form_sta
                 button {
                     onclick: move |_| {
                         image_form.set(ImageForm::new());
-                        form_state.set(FormState::Active);
+                        form_state.set(FormState::Closed);
                     },
                     "ok"
                 }

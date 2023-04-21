@@ -136,9 +136,8 @@ textarea {
     font-family: 'mono-regular';
     font-size: inherit;
     padding: .4rem .2rem;
-    width: calc(100% - .8rem);
-    min-height: 10rem;
-    resize: none;
+    width: 100%;
+    min-height: 20rem;
     border-radius: 0;
     border: .05rem solid var(--fg);
 }
@@ -171,6 +170,7 @@ td {
     padding: .2rem 1rem;
     white-space: nowrap;
     overflow: hidden;
+    max-width: 15rem;
 }
 
 td:hover {

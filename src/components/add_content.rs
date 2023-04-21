@@ -1,9 +1,7 @@
 #![allow(non_snake_case)]
-use dioxus::html::data;
 use dioxus::prelude::*;
-use crate::components::form_utils::*;
 use crate::components::*;
-use crate::database_ops::*;
+use crate::database_ops::ContentRow;
 
 #[derive(Clone, Copy, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
 pub enum ContentType {
@@ -35,7 +33,6 @@ pub struct ContentForm {
     pub content_entry_id: String,
 }
 
-use crate::database_ops::ContentRow;
 
 impl ContentForm {
     fn new() -> Self {
@@ -75,11 +72,10 @@ impl ContentForm {
 }
 
 #[inline_props]
-pub fn ContentFormWrapper(cx: Scope, database_path: String) -> Element {
+pub fn ContentFormWrapper(cx: Scope) -> Element {
     let form_state = use_state(cx, || FormState::Closed);
     cx.render(rsx!{
         ContentForm {
-            database_path: database_path.clone(),
             form_state: form_state,
             form_mode: FormMode::Create,
         }
@@ -87,7 +83,7 @@ pub fn ContentFormWrapper(cx: Scope, database_path: String) -> Element {
 }
 
 #[inline_props]
-pub fn ContentForm<'a>(cx: Scope<'a>, database_path: String, form_state: &'a UseState<FormState>, form_mode: FormMode, content_form: Option<ContentForm>) -> Element {
+pub fn ContentForm<'a>(cx: Scope<'a>, form_state: &'a UseState<FormState>, form_mode: FormMode, content_form: Option<ContentForm>) -> Element {
     let content_form = use_ref(cx, || {
         match content_form {
             Some(form) => form.clone(),
@@ -108,7 +104,6 @@ pub fn ContentForm<'a>(cx: Scope<'a>, database_path: String, form_state: &'a Use
             },
             FormState::Active => rsx!{
                 ImageViewer {
-                    database_path: database_path.clone(),
                     content_entry_id: content_form.read().content_entry_id.clone(),
                 }
                 ContentFormActive {
@@ -123,7 +118,6 @@ pub fn ContentForm<'a>(cx: Scope<'a>, database_path: String, form_state: &'a Use
                         content_form: content_form,
                         form_state: form_state,
                         form_mode: *form_mode.current(),
-                        database_path: database_path.clone(),
                     }
                 }
             }
@@ -266,8 +260,9 @@ fn ContentFormSubmitted<'a>(
     content_form: &'a UseRef<ContentForm>, 
     form_state: &'a UseState<FormState>,
     form_mode: FormMode,
-    database_path: String,
 ) -> Element {
+    let database_path = use_database_path(cx).read().clone().unwrap();
+
     let future = use_future(cx, (), |_| {
         to_owned![database_path, form_mode];
         let mut row = ContentRow::new(content_form.read().clone());
@@ -279,8 +274,6 @@ fn ContentFormSubmitted<'a>(
             }
         }
     });
-
-
 
     cx.render(rsx!{
         match future.value() {

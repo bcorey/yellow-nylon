@@ -6,8 +6,8 @@ use crate::database_ops::ContentRow;
 use crate::components::*;
 
 #[inline_props]
-pub fn EntryViewer(cx: Scope, database_path: String, ) -> Element {
-
+pub fn EntryViewer(cx: Scope) -> Element {
+    let database_path = use_database_path(cx).read().clone().unwrap();
     let form_state = use_state(cx, || FormState::Closed);
     let edit_candidate: &'a UseState<Option<ContentRow>> = use_state(cx, || None);
 
@@ -21,13 +21,13 @@ pub fn EntryViewer(cx: Scope, database_path: String, ) -> Element {
         match *form_state.current() {
             FormState::Active | FormState::Submitted => rsx!{
                 ContentForm {
-                    database_path: database_path.clone(),
                     form_mode: FormMode::Edit,
                     form_state: form_state,
                     content_form: ContentForm::from_row(edit_candidate.as_ref().unwrap().clone()),
                 }
             },
             FormState::Closed => rsx!{
+                ContentFormWrapper {}
                 input {
                     r#type: "text",
                     oninput: move |evt| {

@@ -23,6 +23,7 @@ dioxus-router = { git = "https://github.com/DioxusLabs/dioxus" }
 serde_json = "1.0"
 serde_yaml = "0.9.19"
 serde = { version = "1", features = ["derive"] }
+base64 = "0.21.0"
 
 [package.metadata.bundle]
 name = "highvis content editor"
