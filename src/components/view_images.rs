@@ -45,7 +45,7 @@ fn ImageTableRow(cx: Scope, row: ImageRow) -> Element {
         match *row_state.current() {
             FormState::Active => rsx!{
                 img {
-                    style: "position: relative; display: flex; width: 4rem; height: 4rem; object-fit: cover;",
+                    style: "position: relative; width: 4rem; height: 4rem; object-fit: cover;",
                     src: "{src}",
                 }
                 div {

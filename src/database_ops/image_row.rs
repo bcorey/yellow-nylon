@@ -86,4 +86,26 @@ impl ImageRow {
         pool.close().await;
         rows
     }
+
+    pub async fn all_rows(database_path: String) -> Vec<ImageRow> {
+        let pool = SqlitePoolOptions::new()
+            .max_connections(5)
+            .connect(&database_path).await.unwrap();
+    
+        let query = sqlx::query_as!(
+            ImageRow,
+            r#"
+            SELECT * FROM image_table
+            "#
+        );
+    
+        let rows = query
+            .fetch_all(&pool)
+            .await
+            .unwrap();
+    
+        pool.close().await;
+        rows
+    }
+
 }

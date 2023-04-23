@@ -11,7 +11,7 @@ pub fn StartPage(cx: Scope) -> Element {
     let db_path = use_database_path(cx);
 
     cx.render(rsx!{
-        h1 {"hi.vis"}
+        h1 {"yellow-nylon"}
        
         match **start_page_state {
             FormState::Active => rsx!{
@@ -43,12 +43,16 @@ pub fn StartPage(cx: Scope) -> Element {
 #[inline_props]
 pub fn DatabaseContainer(cx: Scope) -> Element {
     let compile_form_state = use_state(cx, || FormState::Closed);
+    let dist_path: &'a UseState<Option<String>> = use_state(cx, || None);
 
     cx.render(rsx!{
         match **compile_form_state {
             FormState::Closed => rsx!{
                 button {
-                    onclick: move |_| compile_form_state.set(FormState::Active),
+                    onclick: move |_| {
+                        dist_path.set(Some(choose_path()));
+                        compile_form_state.set(FormState::Active);
+                    },
                     "Compile Pages"
                 },
                 EntryViewer {}
@@ -58,7 +62,9 @@ pub fn DatabaseContainer(cx: Scope) -> Element {
                     onclick: move |_| compile_form_state.set(FormState::Closed),
                     "Cancel",
                 },
-                CompilePagesForm {}
+                CompilePagesForm {
+                    dist_path: dist_path.current().as_ref().clone().unwrap()
+                }
             },
             FormState::Submitted => rsx!{
                 ""

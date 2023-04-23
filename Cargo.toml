@@ -18,12 +18,13 @@ dioxus-desktop = { git = "https://github.com/DioxusLabs/dioxus" }
 sqlx = { version = "0.6", features = [ "runtime-async-std-native-tls", "sqlite" ] }
 async-std = { version = "1", features = [ "attributes" ] }
 native-dialog = "0.6.3"
-dioxus-router = { git = "https://github.com/DioxusLabs/dioxus" }
 
 serde_json = "1.0"
 serde_yaml = "0.9.19"
 serde = { version = "1", features = ["derive"] }
 base64 = "0.21.0"
+markdown = "1.0.0-alpha.7"
+
 
 [package.metadata.bundle]
 name = "highvis content editor"

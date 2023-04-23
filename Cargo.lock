@@ -908,21 +908,6 @@ version = "0.3.1"
 source = "git+https://github.com/DioxusLabs/dioxus#73a2beb3275007a6550adc5c420f36e31b7ddef7"
 
 [[package]]
-name = "dioxus-router"
-version = "0.3.0"
-source = "git+https://github.com/DioxusLabs/dioxus#73a2beb3275007a6550adc5c420f36e31b7ddef7"
-dependencies = [
- "dioxus",
- "futures-channel",
- "futures-util",
- "log",
- "serde",
- "serde_urlencoded",
- "thiserror",
- "url",
-]
-
-[[package]]
 name = "dioxus-rsx"
 version = "0.0.3"
 source = "git+https://github.com/DioxusLabs/dioxus#73a2beb3275007a6550adc5c420f36e31b7ddef7"
@@ -1681,7 +1666,7 @@ dependencies = [
  "base64 0.21.0",
  "dioxus",
  "dioxus-desktop",
- "dioxus-router",
+ "markdown",
  "native-dialog",
  "serde",
  "serde_json",
@@ -2109,6 +2094,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "62bb907fe88d54d8d9ce32a3cceab4218ed2f6b7d35617cafe9adf84e43919cb"
 dependencies = [
  "libc",
+]
+
+[[package]]
+name = "markdown"
+version = "1.0.0-alpha.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "90dc06f03f6231d979d6bc10edfd12f407564910d74438eb163d6f6f1f0ee582"
+dependencies = [
+ "unicode-id",
 ]
 
 [[package]]
@@ -3081,18 +3075,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "serde_urlencoded"
-version = "0.7.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d3491c14715ca2294c4d6a88f15e84739788c1d030eed8c110436aafdaa2f3fd"
-dependencies = [
- "form_urlencoded",
- "itoa 1.0.6",
- "ryu",
- "serde",
-]
-
-[[package]]
 name = "serde_yaml"
 version = "0.9.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3632,6 +3614,12 @@ name = "unicode-bidi"
 version = "0.3.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "92888ba5573ff080736b3648696b70cafad7d250551175acbaa4e0385b3e1460"
+
+[[package]]
+name = "unicode-id"
+version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d70b6494226b36008c8366c288d77190b3fad2eb4c10533139c1c1f461127f1a"
 
 [[package]]
 name = "unicode-ident"
